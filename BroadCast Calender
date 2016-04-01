@@ -1,0 +1,153 @@
+<html>
+
+<head>
+    <style>
+
+    </style>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+
+<body ng-app='app' ng-controller='CelendarController' ng-cloak>
+    <div class="container-fluid" style="margin-top:10%">
+        <button type="button" class="btn btn-primary" ng-model="calendarType" uib-btn-checkbox btn-checkbox-true="0" btn-checkbox-false="1">
+            {{calendarType==0?'BroadCast':'Gregorian'}}
+        </button>
+        <div class='row'>
+            <div class="col-xs-offset-1 col-xs-3 form-group">
+                Order Start Date :
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} ng-model="order.startDate" class="form-control" is-open='orderStartDateOpened' datepicker-options="orderStartInlineOptions" ng-change='orderStartDateChange()'>
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="fun('orderStartDateOpened')"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+            <div class="col-xs-offset-2 col-xs-3 form-group">
+                Order End Date :
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} ng-model="order.endDate" class="form-control" is-open='orderEndDateOpened' datepicker-options="orderEndInlineOptions" ng-change='orderEndDateChange()'>
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="fun('orderEndDateOpened');"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+        </div>
+        <div class='row'>
+            <div class="col-xs-offset-1 col-xs-3 form-group">
+                Start Date :
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} ng-model="order.lineItem.startDate" class="form-control" is-open='lineItemStartDateOpened' datepicker-options="lineItemStartInlineOptions" ng-change='orderLineItemStartDateChange()'>
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="fun('lineItemStartDateOpened')"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+            <div class="col-xs-offset-2 col-xs-3 form-group">
+                End Date:
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} ng-model="order.lineItem.endDate" class="form-control" is-open='lineItemEndDateOpened' datepicker-options="lineItemEndInlineOptions">
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="fun('lineItemEndDateOpened')"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+        </div>
+        <!--<div class='row'>
+            <div class='col-xs-offset-1 col-xs-2 form-group'>
+                <label>StartDate : {{order.lineItem.startDate}}</label>
+                <br>
+                <label><span>
+                <input type="number" class='form-control' ng-model='dayOffset' ng-change='updateEndDate()'>EndDate : {{order.lineItem.endDate }}</span></label>
+                <br>
+            </div>
+            <div class="col-xs-offset-2 col-xs-3 form-group">
+
+                order.calendarStart  {{order.calendarStart }}
+                <br> order.calendarEnd {{order.calendarEnd }}
+                <br> order.startDate {{order.startDate }}
+                <br> order.endDate {{order.endDate }} order.lineItem.calendarStart  {{order.lineItem.calendarStart }}
+                <br> order.lineItem.calendarEnd {{order.lineItem.calendarEnd }}
+                <br> order.lineItem.startDate  {{order.lineItem.startDate }}
+                <br> order.lineItem.endDate  {{order.lineItem.endDate }}
+            </div>
+        </div>-->
+    </div>
+    <div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap-tpls.js"></script>
+    <script>
+        angular.module('app', ['ui.bootstrap']).controller('CelendarController', ['$scope', function ($scope) {
+            $scope.format = 'dd-MMM-yyyy'
+            $scope.order = {};
+            $scope.orderStartDateOpened = false;
+            $scope.orderEndDateOpened = false;
+            $scope.lineItemStartDateOpened = false;
+            $scope.lineItemEndDateOpened = false;
+            $scope.order.lineItem = {};
+            /*$scope.order.startDate = new Date();*/
+            /*$scope.order.endDate = new Date();
+            $scope.order.lineItem.startDate = new Date();
+            $scope.order.lineItem.endDate = new Date();*/
+
+            $scope.order.calendarStart = new Date();
+            $scope.order.calendarEnd = new Date();
+
+            $scope.orderStartInlineOptions = {
+                minDate: $scope.order.calendarStart,
+                showWeeks: false
+            }
+            $scope.orderEndInlineOptions = {
+                minDate: $scope.order.calendarStart,
+                maxDate: $scope.order.calendarEnd,
+                showWeeks: false
+            }
+            $scope.lineItemStartInlineOptions = {
+                minDate: $scope.order.startDate,
+                maxDate: $scope.order.endDate,
+                showWeeks: false
+            }
+            $scope.lineItemEndInlineOptions = {
+                minDate: $scope.order.startDate,
+                maxDate: $scope.order.endDate,
+                showWeeks: false
+            }
+
+            $scope.orderStartDateChange = function () {
+                $scope.order.lineItem.startDate = null;
+                $scope.order.lineItem.endDate = null;
+                /* $scope.order.endDate = $scope.order.startDate;*/
+                var orderEndCalendarLimit = new Date($scope.order.startDate);
+                orderEndCalendarLimit = new Date(orderEndCalendarLimit.getFullYear(), orderEndCalendarLimit.getMonth() + 3, orderEndCalendarLimit.getDate());
+                orderEndCalendarLimit.setDate(1);
+                orderEndCalendarLimit.setDate(orderEndCalendarLimit.getDate() - 1);
+                $scope.orderEndInlineOptions.minDate = $scope.order.startDate;
+                $scope.orderEndInlineOptions.maxDate = orderEndCalendarLimit;
+            }
+            $scope.orderEndDateChange = function () {
+                $scope.lineItemStartInlineOptions.minDate = $scope.order.startDate;
+                $scope.lineItemStartInlineOptions.maxDate = $scope.order.endDate;
+            }
+            $scope.orderLineItemStartDateChange = function () {
+                var lineItemEndDate = new Date($scope.order.lineItem.startDate);
+                lineItemEndDate = new Date(lineItemEndDate.getFullYear(),
+                    lineItemEndDate.getMonth() + 1, lineItemEndDate.getDate());
+                lineItemEndDate.setDate(1);
+                lineItemEndDate.setDate(lineItemEndDate.getDate() - 1);
+                $scope.lineItemEndInlineOptions.minDate = $scope.order.lineItem.startDate;
+                $scope.lineItemEndInlineOptions.maxDate = lineItemEndDate < $scope.order.endDate ? lineItemEndDate : $scope.order.endDate;
+            }
+            $scope.fun = function (calPopupOpen) {
+                $scope[calPopupOpen] = !$scope[calPopupOpen];
+            }
+    }]);
+    </script>
+</body>
+
+
+</html>
