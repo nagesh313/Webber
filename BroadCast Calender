@@ -1,9 +1,6 @@
 <html>
 
 <head>
-    <style>
-
-    </style>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
 </head>
@@ -23,7 +20,7 @@
           </span>
                 </p>
             </div>
-            <div class="col-xs-offset-2 col-xs-3 form-group">
+            <div class="col-xs-offset-2 col-xs-3 form-group" ng-show='showOrderEndDate'>
                 Order End Date :
                 <p class="input-group">
                     <input type="text" uib-datepicker-popup={{format}} ng-model="order.endDate" class="form-control" is-open='orderEndDateOpened' datepicker-options="orderEndInlineOptions" ng-change='orderEndDateChange()'>
@@ -34,7 +31,7 @@
             </div>
         </div>
         <div class='row'>
-            <div class="col-xs-offset-1 col-xs-3 form-group">
+            <div class="col-xs-offset-1 col-xs-3 form-group" ng-show='showLineItemStartDate'>
                 Start Date :
                 <p class="input-group">
                     <input type="text" uib-datepicker-popup={{format}} ng-model="order.lineItem.startDate" class="form-control" is-open='lineItemStartDateOpened' datepicker-options="lineItemStartInlineOptions" ng-change='orderLineItemStartDateChange()'>
@@ -43,7 +40,7 @@
           </span>
                 </p>
             </div>
-            <div class="col-xs-offset-2 col-xs-3 form-group">
+            <div class="col-xs-offset-2 col-xs-3 form-group" ng-show='showLineItemEndDate'>
                 End Date:
                 <p class="input-group">
                     <input type="text" uib-datepicker-popup={{format}} ng-model="order.lineItem.endDate" class="form-control" is-open='lineItemEndDateOpened' datepicker-options="lineItemEndInlineOptions">
@@ -89,6 +86,9 @@
             $scope.orderEndDateOpened = false;
             $scope.lineItemStartDateOpened = false;
             $scope.lineItemEndDateOpened = false;
+            $scope.showOrderEndDate=false;
+            $scope.showLineItemStartDate=false;
+            $scope.ShowLineItemEndDate=false;
             $scope.order.lineItem = {};
             /*$scope.order.startDate = new Date();*/
             /*$scope.order.endDate = new Date();
@@ -121,6 +121,9 @@
             $scope.orderStartDateChange = function () {
                 $scope.order.lineItem.startDate = null;
                 $scope.order.lineItem.endDate = null;
+                $scope.showOrderEndDate=true;
+            $scope.showLineItemStartDate=false;
+            $scope.showLineItemEndDate=false;
                 /* $scope.order.endDate = $scope.order.startDate;*/
                 var orderEndCalendarLimit = new Date($scope.order.startDate);
                 orderEndCalendarLimit = new Date(orderEndCalendarLimit.getFullYear(), orderEndCalendarLimit.getMonth() + 3, orderEndCalendarLimit.getDate());
@@ -130,10 +133,13 @@
                 $scope.orderEndInlineOptions.maxDate = orderEndCalendarLimit;
             }
             $scope.orderEndDateChange = function () {
+            $scope.showLineItemStartDate=true;
+            $scope.showLineItemEndDate=false;
                 $scope.lineItemStartInlineOptions.minDate = $scope.order.startDate;
                 $scope.lineItemStartInlineOptions.maxDate = $scope.order.endDate;
             }
             $scope.orderLineItemStartDateChange = function () {
+            $scope.showLineItemEndDate=true;
                 var lineItemEndDate = new Date($scope.order.lineItem.startDate);
                 lineItemEndDate = new Date(lineItemEndDate.getFullYear(),
                     lineItemEndDate.getMonth() + 1, lineItemEndDate.getDate());
