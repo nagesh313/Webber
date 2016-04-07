@@ -1,0 +1,258 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+
+<body ng-app='app' ng-controller='CelendarController' ng-cloak>
+    countOfMove -- >{{countOfMove}} orderStartDateOpened -- > {{orderStartDateOpened}}
+    Order --> {{order}}
+    <div class="container-fluid" style="margin-top:10%">
+        <button type="button" class="btn btn-primary" ng-model="calendarType" ng-click='init()'>
+            {{calendarType===1?'Gregorian':'BroadCast'}}
+        </button>
+        <div class='row'>
+            <div class="col-xs-offset-1 col-xs-3 form-group">
+                Order Start Date :
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} show-button-bar='false' ng-model="order.startDate" class="form-control" is-open='orderStartDateOpened' datepicker-options="orderStartInlineOptions" ng-change='orderStartDateChange()'>
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="toggleCalendar('orderStartDateOpened')"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+            <div class="col-xs-offset-2 col-xs-3 form-group" ng-show='showOrderEndDate'>
+                Order End Date :
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} show-button-bar='false' ng-model="order.endDate" class="form-control" is-open='orderEndDateOpened' datepicker-options="orderEndInlineOptions" ng-change='orderEndDateChange()'>
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="toggleCalendar('orderEndDateOpened');"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+        </div>
+        <div class='row'>
+            <div class="col-xs-offset-1 col-xs-3 form-group" ng-show='showLineItemStartDate'>
+                Start Date :
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} show-button-bar='false' ng-model="order.lineItem.startDate" class="form-control" is-open='lineItemStartDateOpened' datepicker-options="lineItemStartInlineOptions" ng-change='orderLineItemStartDateChange()'>
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="toggleCalendar('lineItemStartDateOpened')"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+            <div class="col-xs-offset-2 col-xs-3 form-group" ng-show='showLineItemEndDate'>
+                End Date:
+                <p class="input-group">
+                    <input type="text" uib-datepicker-popup={{format}} show-button-bar='false' ng-model="order.lineItem.endDate" class="form-control" is-open='lineItemEndDateOpened' datepicker-options="lineItemEndInlineOptions">
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="toggleCalendar('lineItemEndDateOpened')"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="../lib/ui-bootstrap-tpls-1.1.2.js"></script>
+    <script>
+        angular.module('app', ['ui.bootstrap']).controller('CelendarController', ['$scope', '$timeout', function ($scope, $timeout) {
+            $scope.currentOpenCalenderMonthsState;
+            $scope.calendarType = 1;
+
+            $scope.init = function () {
+                $scope.calendarType == 1 ? $scope.calendarType = 0 : $scope.calendarType = 1;
+                $scope.format = 'dd-MMM-yyyy'
+                $scope.order = {};
+                $scope.orderStartDateOpened = false;
+                $scope.orderEndDateOpened = false;
+                $scope.lineItemStartDateOpened = false;
+                $scope.lineItemEndDateOpened = false;
+                $scope.showOrderEndDate = false;
+                $scope.showLineItemStartDate = false;
+                $scope.showLineItemEndDate = false;
+                $scope.order.lineItem = {};
+                /*$scope.order.startDate = new Date();*/
+                /*$scope.order.endDate = new Date();
+                $scope.order.lineItem.startDate = new Date();
+                $scope.order.lineItem.endDate = new Date();*/
+
+                $scope.order.calendarStart = new Date();
+                $scope.currentOpenCalenderMonthsState;
+                $scope.order.calendarEnd = new Date();
+                var dateToCompare = getBroadCastStartAndEndDate(new Date());
+                var title = '{{title}}';
+                $scope.orderStartInlineOptions = {
+                    minDate: $scope.order.calendarStart,
+                    showWeeks: true,
+                    startingDay: 1,
+                    showButtonBar: false,
+                    minMode: 'day',
+                    maxMode: 'day'
+                        /*,
+                                            dateDisabled: disabled*/
+                }
+                $scope.orderEndInlineOptions = {
+                    minDate: $scope.order.calendarStart,
+                    maxDate: $scope.order.calendarEnd,
+                    showWeeks: true,
+                    startingDay: 1,
+                    showButtonBar: false
+
+                }
+                $scope.lineItemStartInlineOptions = {
+                    minDate: $scope.order.startDate,
+                    maxDate: $scope.order.endDate,
+                    showWeeks: true,
+                    startingDay: 1,
+                    showButtonBar: false
+                        /*,
+                                            dateDisabled: disabled*/
+                }
+                $scope.lineItemEndInlineOptions = {
+                    minDate: $scope.order.startDate,
+                    maxDate: $scope.order.endDate,
+                    showWeeks: true,
+                    startingDay: 1,
+                    showButtonBar: false
+                }
+
+
+            }
+            $scope.init();
+
+            $scope.countOfMove = 0;
+
+            //to reset the countOfMove on Close of the datepicked
+            $scope.$watch('lineItemStartDateOpened', function () {
+
+                //console.log("inside  " + $scope.countOfMove);
+                $scope.countOfMove = 0;
+            })
+            $scope.$watch('countOfMove', function (newVal, OldVal) {
+                if (typeof (newVal) != 'undefined') {
+                    if (newVal != OldVal) {
+                        console.log(newVal);
+                        var d = new Date();
+                        d.setDate(15);
+                        if (typeof (oldVal) != 'undefined')
+                            d.setMonth(d.getMonth() + newVal - oldVal);
+                        else {
+                            d.setMonth(d.getMonth() + newVal);
+                        }
+                        //console.log(d);
+                        var dates = getBroadCastStartAndEndDate(new Date(d.getTime()));
+                        /*           $timeout(function(){*/
+                        $scope.lineItemStartInlineOptions.minDate = dates.broadCastStartDay;
+                        $scope.lineItemStartInlineOptions.maxDate = dates.broadCastEndDay;
+                        /*   });*/
+
+                        // getBroadCastStartAndEndDate()
+                        //  console.log('changed');
+                    }
+                }
+            });
+
+            $scope.orderStartDateChange = function () {
+                $scope.order.lineItem.startDate = null;
+                $scope.order.lineItem.endDate = null;
+                $scope.showOrderEndDate = true;
+                $scope.showLineItemStartDate = false;
+                $scope.showLineItemEndDate = false;
+                $scope.order.endDate = $scope.order.startDate;
+                var orderEndCalendarLimit = new Date($scope.order.startDate.getTime());
+                orderEndCalendarLimit = new Date(orderEndCalendarLimit.getFullYear(), orderEndCalendarLimit.getMonth() + 3, orderEndCalendarLimit.getDate());
+                orderEndCalendarLimit.setDate(1);
+                orderEndCalendarLimit.setDate(orderEndCalendarLimit.getDate() - 1);
+                $scope.orderEndInlineOptions.minDate = $scope.order.startDate;
+                $scope.orderEndInlineOptions.maxDate = orderEndCalendarLimit;
+            }
+            $scope.orderEndDateChange = function () {
+                $scope.showLineItemStartDate = true;
+                $scope.showLineItemEndDate = false;
+                $scope.order.lineItem.startDate = new Date($scope.order.startDate.getTime());
+                $scope.lineItemStartInlineOptions.minDate = new Date($scope.order.startDate.getTime());
+                var dates = getBroadCastStartAndEndDate(new Date($scope.order.startDate.getTime()))
+                $scope.lineItemStartInlineOptions.maxDate = dates.broadCastEndDay.getTime() > $scope.order.endDate ? $scope.order.endDate : dates.broadCastEndDay;
+            }
+            $scope.orderLineItemStartDateChange = function () {
+                $scope.showLineItemEndDate = true;
+                $scope.order.lineItem.endDate = $scope.order.lineItem.startDate;
+                if ($scope.calendarType == 1) {
+                    //If Gregorian
+                    var lineItemEndDate = new Date($scope.order.lineItem.startDate);
+                    lineItemEndDate = new Date(lineItemEndDate.getFullYear(),
+                        lineItemEndDate.getMonth() + 1, lineItemEndDate.getDate());
+                    lineItemEndDate.setDate(1);
+                    lineItemEndDate.setDate(lineItemEndDate.getDate() - 1);
+                    $scope.lineItemEndInlineOptions.minDate = $scope.order.lineItem.startDate;
+                    $scope.lineItemEndInlineOptions.maxDate = lineItemEndDate < $scope.order.endDate ? lineItemEndDate : $scope.order.endDate;
+                } else {
+                    var offset = 0;
+                    var lineItemEndDate = new Date($scope.order.lineItem.startDate);
+                    //get monday offset
+                    lineItemEndDate.setDate(1);
+                    var nextMonthBroadCastStartDate = new Date($scope.order.lineItem.startDate);
+                    nextMonthBroadCastStartDate.setDate(1);
+                    nextMonthBroadCastStartDate.setMonth(nextMonthBroadCastStartDate.getMonth() + 1);
+                    while (nextMonthBroadCastStartDate.getDay() != 1) {
+                        if (nextMonthBroadCastStartDate.getTime() == $scope.order.lineItem.startDate.getTime()) {
+                            nextMonthBroadCastStartDate.setDate(nextMonthBroadCastStartDate.getDate() + 35);
+                        }
+                        nextMonthBroadCastStartDate.setDate(nextMonthBroadCastStartDate.getDate() - 1);
+                        offset++;
+                    }
+                    nextMonthBroadCastStartDate.setDate(nextMonthBroadCastStartDate.getDate() - 1);
+                    lineItemEndDate = nextMonthBroadCastStartDate;
+                    $scope.lineItemEndInlineOptions.minDate = $scope.order.lineItem.startDate;
+                    $scope.lineItemEndInlineOptions.maxDate = lineItemEndDate < $scope.order.endDate ? lineItemEndDate : $scope.order.endDate;
+                }
+            }
+
+            function getBroadCastStartAndEndDate(data) {
+                var broadCastStartDay, broadCastEndDay;
+                var d = data;
+                var d1 = new Date(d.getTime());
+                var d2 = new Date(d.getTime());
+                d1.setMonth(d1.getMonth() + 1);
+                d1.setDate(1);
+                d1.setDate(d1.getDate() - 1);
+                while (d1.getDay() != 1) {
+                    d1.setDate(d1.getDate() - 1)
+                }
+                if (d1.getTime() <= d.getTime()) {
+                    broadCastStartDay = new Date(d1.getTime());
+                } else {
+                    d2.setDate(1);
+                    while (d2.getDay() != 1) {
+                        d2.setDate(d2.getDate() - 1)
+                    }
+                    broadCastStartDay = new Date(d2.getTime());
+                }
+                var d3 = new Date(d.getTime());
+                d3.setMonth(d3.getMonth() + 1);
+                d3.setDate(1);
+                d3.setDate(d3.getDate() - 1);
+                while (d3.getDay() != 0) {
+                    d3.setDate(d3.getDate() - 1);
+                }
+                broadCastEndDay = d3;
+                return {
+                    'broadCastStartDay': broadCastStartDay,
+                    'broadCastEndDay': broadCastEndDay
+                }
+            }
+            $scope.toggleCalendar = function (calPopupOpen) {
+                $scope[calPopupOpen] = !$scope[calPopupOpen];
+            }
+        }]);
+    </script>
+</body>
+
+</html>
