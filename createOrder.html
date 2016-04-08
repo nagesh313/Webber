@@ -1,0 +1,241 @@
+<div class='container' ng-init='init()'>
+    <div class='row'>
+        {{orderStartDateInlineOptions}} {{order}} {{CalendarService.calendarType}} {{order.calendarType}}
+        <br>
+        asdfasd<br>
+        {{orderStartDateEndLimit}}
+        <div class='page-title'>
+            <h4>Order Details</h4>
+        </div>
+    </div>
+    <form class="create-order-form">
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="email">Market:</label>
+                    <input type="email" class="form-control" id="email">
+                    <p class="help-block"></p>
+                </div>
+
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="clientName">Client Name:</label>
+                    <input type="email" class="form-control" id="clientName">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="orderId">Order ID:</label>
+                    <input type="text" class="form-control" id="orderId" disabled>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="contractId">Contract Id:</label>
+                    <input type="text" class="form-control" id="contractId" disabled>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-lg-12">
+                <div class="form-group">
+                    <label for="orderName">Order Name:</label>
+                    <input type="text" class="form-control" id="orderName">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="celendarTypeDropdown">Calendar Type:</label>
+                    <select class="form-control" id="celendarTypeDropdown" ng-model='order.calendarType' ng-change='calendarTypeChange()'>
+                        <option ng-selected='order.calendarType==0' value="0">Conventional</option>
+                        <option ng-selected='order.calendarType==1' value="1">BroadCast</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4" ng-show='order.calendarType==0'>
+                <div class="form-group">
+                    <label for="startDate">Start Date:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" uib-datepicker-popup="{{::CalendarService.format}}" ng-model="order.startDate"  ng-change='adjustOrderEndDateCalendar()'  min-date='orderStartDateStartLimit' max-date='orderStartDateEndLimit' show-button-bar='orderStartDateInlineOptions.showButtonBars' is-open="orderStartDateInlineOptions.isOpen" starting-day='0'  ng-required="true" ng-readonly='true' />
+                        <span class="glyphicon glyphicon-calendar input-group-addon" id="startDateCalendar" ng-click="toggleCalendar('orderStartDate')"></span>
+                    </div>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4" ng-show='order.calendarType==0'>
+                <div class="form-group">
+                    <label for="endDate">End Date:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" uib-datepicker-popup="{{::CalendarService.format}}" ng-model="order.endDate"  ng-change=''  min-date='orderEndDateStartLimit' max-date='orderEndDateEndLimit' show-button-bar='orderStartDateInlineOptions.showButtonBars' is-open="orderEndDateInlineOptions.isOpen" starting-day='0'
+                               inline-options='orderEndDateInlineOptions' ng-required="true" ng-readonly='true' />
+                        <span class="glyphicon glyphicon-calendar input-group-addon" id="endDateCalendar" ng-click="toggleCalendar('orderEndDate')"></span>
+                    </div>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4" ng-show='order.calendarType==1'>
+                <div class="form-group">
+                    <label for="startDate">Start Date:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" uib-datepicker-popup="{{::CalendarService.format}}" ng-model="order.startDate"  ng-change='adjustOrderEndDateCalendar()' min-date='orderStartDateStartLimit' min-date='orderStartDateEndLimit' show-button-bar='orderStartDateInlineOptions.showButtonBars' is-open="orderStartDateInlineOptions.isOpen" starting-day='1' inline-options='orderStartDateInlineOptions' ng-required="true" ng-readonly='true' />
+                        <span class="glyphicon glyphicon-calendar input-group-addon" id="startDateCalendar" ng-click="toggleCalendar('orderStartDate')"></span>
+                    </div>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4" ng-show='order.calendarType==1'>
+                <div class="form-group">
+                    <label for="endDate">End Date:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" uib-datepicker-popup="{{::CalendarService.format}}" ng-model="order.endDate"  ng-change=''  min-date='orderEndDateStartLimit' max-date='orderEndDateEndLimit' show-button-bar='orderStartDateInlineOptions.showButtonBars' is-open="orderEndDateInlineOptions.isOpen" starting-day='1'
+                               inline-options='orderEndDateInlineOptions' ng-required="true" ng-readonly='true' />
+                        <span class="glyphicon glyphicon-calendar input-group-addon" id="endDateCalendar" ng-click="toggleCalendar('orderEndDate')"></span>
+                    </div>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="agency">Agency:</label>
+                    <input type="text" class="form-control" id="agency" disabled>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="accountExecutiveId">Account Exectutive ID:</label>
+                    <select class="form-control" id="accountExecutiveId">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="accountExecutiveName">Account Executive Name:</label>
+                    <input type="text" class="form-control" id="accountExecutiveName" disabled>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="billTo">Bill To:</label>
+                    <select class="form-control" id="billTo">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="broadcast">BroadCast:</label>
+                    <select class="form-control" id="broadcast">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="contractType">Contract Type:</label>
+                    <select class="form-control" id="contractType">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="primaryReference">Primary Reference:</label>
+                    <select class="form-control" id="primaryReference">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="secondaryReference">Secondary Reference:</label>
+                    <select class="form-control" id="secondaryReference">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="tertiaryReference">Tertiary Reference:</label>
+                    <input type="text" class="form-control" id="tertiaryReference" disabled>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="fourthReference">Fourth Reference:</label>
+                    <select class="form-control" id="fourthReference">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <div class="form-group">
+                    <label for="affidavitType">Affidavit Type:</label>
+                    <select class="form-control" id="affidavitType">
+                        <option>Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="action-buttons">
+            <button type="button" class="btn btn-default">Cancel</button>
+            <button type="button" class="btn btn-default">Clear</button>
+            <button type="button" class="btn btn-default">Create Order</button>
+        </div>
+    </div>
+</div>
