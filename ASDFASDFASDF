@@ -1,0 +1,208 @@
+package asdf;
+
+import java.io.*;
+import java.util.ArrayList;
+
+import javax.swing.text.html.HTMLDocument.HTMLReader.BlockAction;
+
+public class CandidateCode5 {
+	public static int[][][] tetrisBlocks;
+	public static ArrayList<Integer> countArray = new ArrayList<Integer>();
+
+	public static void main(String args[]) {
+		System.out.println(CandidateCode5.requiredTetriminos(3, 3, new int[] {
+				1, 1, 1, 0, 0, 0, 0, 0, 0 }));
+		System.out.println("Exit");
+	}
+
+	public static int requiredTetriminos(int input1, int input2, int[] input3) {
+		int count = 0;
+		int[][] inputArray = new int[input1 + 2][input2 + 2];
+		for (int i = 0; i < input1; i++) {
+			for (int j = 0; j < input2; j++) {
+				inputArray[i][j] = input3[count];
+				++count;
+			}
+		}
+		count = 0;
+		tetrisBlocks = getBlocks();
+		fillblocks(input1, input2, 0, 0, inputArray, 0, 0);
+		for (int i : countArray) {
+			count = count > i ? i : count;
+		}
+		return count;
+	}
+
+	public static void fillblocks(int length, int breadth, int in, int ij,
+			int[][] arrayToFill, int count, int ki) {
+		for (int i = in; i < length; i++) {
+			for (int j = ij; j < breadth; j++) {
+				for (int k = ki; k < 18; k++)
+					if (arrayToFill[i][j] == 0) {
+						int newArray[][] = new int[length + 2][breadth + 2];
+						for (int l = 0; l < length + 2; l++) {
+							System.arraycopy(arrayToFill[l], 0, newArray[l], 0,
+									breadth);
+						}
+						doProcess(length, breadth, i, j, newArray, count + 1, k);
+					}
+			}
+		}
+	}
+
+	public static void doProcess(int length, int breadth, int i, int j,
+			int[][] arrayToFill, int count, int ki) {
+		if (i <= length - 1 && j <= breadth - 1) {
+			System.out.println(i + " " + j + " " + count + " " + ki);
+
+			int newArray[][] = new int[length + 2][breadth + 2];
+			for (int l = 0; l < length + 2; l++) {
+				System.arraycopy(arrayToFill[l], 0, newArray[l], 0, breadth);
+			}
+
+			newArray = mergeArrays(length, breadth, i, j, newArray, ki);
+			if (newArray != null) {
+				checkIfFilled(length, breadth, newArray, count);
+				for (int k = ki; k < length + 2; k++) {
+					if (j == breadth - 1) {
+						j = 0;
+						i = i + 1;
+					} else {
+						j = j + 1;
+					}
+
+					int newNewArray[][] = new int[length + 2][breadth + 2];
+					for (int l = 0; l < length + 2; l++) {
+						System.arraycopy(newArray[l], 0, newNewArray[l], 0,
+								breadth);
+					}
+					fillblocks(length, breadth, i, j, newNewArray, count + 1, k);
+				}
+			}
+		}
+
+	}
+
+	// return null if merge not possible else reutrn the merged array
+	public static int[][] mergeArrays(int length, int breadth, int posX,
+			int posY, int[][] inputArray, int tetrisBlocksNo) {
+		if (posX >= length || posY >= breadth) {
+			return null;
+		}
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				/*
+				 * if(posX + i > length || posY + j > breadth){ }
+				 */
+				
+				if (inputArray[posX + i][posY + j] == 1
+						&& tetrisBlocks[tetrisBlocksNo][i][j] == 1) {
+					return null;
+				}
+				else{
+					inputArray[posX + i][posY + j] = tetrisBlocks[tetrisBlocksNo][i][j];
+				}
+			}
+		}
+		return inputArray;
+	}
+
+	public static boolean checkIfFilled(int length, int breadth, int[][] array,
+			int count) {
+		length = length + 2;
+		breadth = breadth + 2;
+		for (int i = 0; i < length; i++) {
+			for (int j = 0; j < breadth; j++) {
+				if (length - 3 > i || breadth - 3 > j) {
+					if (array[i][j] == 1)
+						return false;
+				}
+				if (array[i][j] == 0) {
+					return false;
+				}
+			}
+		}
+		countArray.add(count);
+		return true;
+	}
+
+	public static int[][] rotateRight(int[][] array) {
+		int temp = 0;
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				temp = array[x][y];
+				array[x][y] = array[y][3 - 1 - x];
+				array[y][3 - 1 - x] = array[3 - 1 - x][3 - 1 - y];
+				array[3 - 1 - x][3 - 1 - y] = array[3 - 1 - y][x];
+				array[3 - 1 - y][x] = temp;
+			}
+		}
+		return array;
+	}
+
+	public static int[][][] getBlocks() {
+		int[][][] block = new int[18][][];
+
+		block[0] = new int[][] { { 1, 0, 0 }, { 1, 0, 0 }, { 1, 0, 0 } };
+		block[1] = new int[][] { { 1, 1, 1 }, { 0, 0, 0 }, { 0, 0, 0 } };
+
+		block[2] = new int[][] { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 0, 0 } };
+		block[3] = new int[][] { { 1, 1, 1 }, { 0, 1, 0 }, { 0, 0, 0 } };
+
+		block[4] = new int[][] { { 1, 1, 0 }, { 1, 1, 0 }, { 0, 0, 0 } };
+		block[5] = new int[][] { { 0, 1, 1 }, { 0, 1, 1 }, { 0, 0, 0 } };
+
+		block[6] = new int[][] { { 1, 1, 0 }, { 0, 1, 1 }, { 0, 0, 0 } };
+		block[7] = new int[][] { { 0, 1, 0 }, { 1, 1, 0 }, { 1, 0, 0 } };
+
+		block[8] = new int[][] { { 0, 1, 1 }, { 1, 1, 0 }, { 0, 0, 0 } };
+		block[9] = new int[][] { { 1, 0, 0 }, { 1, 1, 0 }, { 0, 1, 0 } };
+
+		block[10] = new int[][] { { 1, 0, 0 }, { 1, 0, 0 }, { 1, 1, 0 } };
+		block[11] = new int[][] { { 0, 0, 1 }, { 1, 1, 1 }, { 0, 0, 0 } };
+		block[12] = new int[][] { { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 } };
+		block[13] = new int[][] { { 1, 1, 0 }, { 1, 0, 0 }, { 1, 0, 0 } };
+
+		block[14] = new int[][] { { 0, 1, 0 }, { 0, 1, 0 }, { 1, 1, 0 } };
+		block[15] = new int[][] { { 1, 1, 1 }, { 0, 0, 1 }, { 0, 0, 0 } };
+		block[16] = new int[][] { { 1, 1, 0 }, { 1, 0, 0 }, { 1, 0, 0 } };
+		block[17] = new int[][] { { 1, 0, 0 }, { 1, 1, 1 }, { 0, 0, 0 } };
+		/*
+		 * block[0] = new int[][] { { 0, 0, 0 }, { 1, 1, 1 }, { 0, 0, 0 } };
+		 * block[1] = new int[][] { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 } }; //
+		 * inverted L block[2] = new int[][] { { 0, 0, 0 }, { 1, 1, 1 }, { 0, 0,
+		 * 1 } }; block[3] = new int[][] { { 0, 1, 0 }, { 0, 1, 0 }, { 1, 1, 0 }
+		 * }; block[4] = new int[][] { { 1, 0, 0 }, { 1, 1, 1 }, { 0, 0, 0 } };
+		 * block[5] = new int[][] { { 0, 1, 1 }, { 0, 1, 0 }, { 0, 1, 0 } };
+		 * 
+		 * // L block[6] = new int[][] { { 0, 0, 1 }, { 1, 1, 1 }, { 0, 0, 0 }
+		 * }; block[7] = new int[][] { { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 } };
+		 * block[8] = new int[][] { { 0, 0, 0 }, { 1, 1, 1 }, { 1, 0, 0 } };
+		 * block[9] = new int[][] { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 1, 1 } };
+		 * 
+		 * // square block[10] = new int[][] { { 1, 1, 0 }, { 1, 1, 0 }, { 0, 0,
+		 * 0 } }; block[11] = new int[][] { { 0, 1, 1 }, { 0, 1, 1 }, { 0, 0, 0
+		 * } }; block[12] = new int[][] { { 0, 0, 0 }, { 1, 1, 0 }, { 1, 1, 0 }
+		 * }; block[13] = new int[][] { { 0, 0, 0 }, { 0, 1, 1 }, { 0, 1, 1 } };
+		 * 
+		 * // _|_ block[14] = new int[][] { { 0, 0, 0 }, { 0, 1, 0 }, { 1, 1, 1
+		 * } }; block[15] = new int[][] { { 1, 1, 1 }, { 0, 1, 0 }, { 0, 0, 0 }
+		 * }; block[16] = new int[][] { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 0, 0 } };
+		 * block[17] = new int[][] { { 0, 0, 1 }, { 0, 1, 1 }, { 0, 0, 1 } };
+		 * 
+		 * // z block[18] = new int[][] { { 1, 1, 0 }, { 0, 1, 1 }, { 0, 0, 0 }
+		 * }; block[19] = new int[][] { { 0, 1, 0 }, { 1, 1, 0 }, { 1, 0, 0 } };
+		 * block[20] = new int[][] { { 0, 0, 0 }, { 1, 1, 0 }, { 0, 1, 1 } };
+		 * block[21] = new int[][] { { 0, 0, 1 }, { 0, 1, 1 }, { 0, 1, 0 } };
+		 * 
+		 * // inverted z block[22] = new int[][] { { 0, 0, 0 }, { 0, 1, 1 }, {
+		 * 1, 1, 0 } }; block[23] = new int[][] { { 0, 1, 0 }, { 0, 1, 1 }, { 0,
+		 * 0, 1 } }; block[24] = new int[][] { { 0, 1, 1 }, { 1, 1, 0 }, { 0, 0,
+		 * 0 } }; block[25] = new int[][] { { 1, 0, 0 }, { 1, 1, 0 }, { 0, 1, 0
+		 * } };
+		 */
+
+		return block;
+	}
+
+}
